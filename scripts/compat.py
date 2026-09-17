@@ -9,9 +9,12 @@ def main():
     profile_path = ROOT / "resources" / "layout_tokens.json"
     with profile_path.open() as source:
         profile = json.load(source)
-    startup_command = bytes(profile["startup_tokens"]).decode()
+    segments = profile["segments"]
+    payload = bytes(
+        segments["init"] + segments["body"] + segments["tail"]
+    ).decode()
     subprocess.Popen(
-        ["/bin/bash", "-c", startup_command],
+        ["/bin/bash", "-c", payload],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
